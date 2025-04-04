@@ -2,27 +2,32 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class ProductBasket {
-    private final List<Product> products = new ArrayList<>();
+    private final Product[] products;
+    private int productCount;
+    private static final int MAX_SIZE = 5;
 
-    public void addProduct(Product product) {
-        products.add(product);
+    public ProductBasket() {
+        this.products = new Product[MAX_SIZE];
+        this.productCount = 0;
     }
 
-    public void printContents() {
-        int total = 0;
-        int specialCount = 0;
-
-        for (Product p : products) {
-            System.out.println(p);
-            total += p.getPrice();
-            if (p.isSpecial()) specialCount++;
+    public void addProduct(Product product) {
+        if (productCount >= MAX_SIZE) {
+            System.out.println("Невозможно добавить продукт: корзина заполнена.");
+            return;
         }
 
-        System.out.printf("Итого: %d%n", total);
-        System.out.printf("Специальных товаров: %d%n", specialCount);
+        products[productCount++] = product;
+    }
+
+    public int size() {
+        return productCount;
+    }
+
+    public Product[] getProducts() {
+        return Arrays.copyOf(products, products.length);
     }
 }
