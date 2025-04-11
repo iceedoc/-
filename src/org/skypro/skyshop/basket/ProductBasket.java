@@ -1,7 +1,6 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
-
 import java.util.Arrays;
 
 public class ProductBasket {
@@ -14,13 +13,17 @@ public class ProductBasket {
         this.productCount = 0;
     }
 
-    public void addProduct(Product product) {
+    public boolean addProduct(Product product) {
+        if (product == null) {
+            throw new NullPointerException("Продукт не может быть null");
+        }
+
         if (productCount >= MAX_SIZE) {
-            System.out.println("Невозможно добавить продукт: корзина заполнена.");
-            return;
+            return false;
         }
 
         products[productCount++] = product;
+        return true;
     }
 
     public int size() {
@@ -28,6 +31,6 @@ public class ProductBasket {
     }
 
     public Product[] getProducts() {
-        return Arrays.copyOf(products, products.length);
+        return Arrays.copyOf(products, productCount);
     }
 }

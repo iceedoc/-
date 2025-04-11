@@ -2,21 +2,25 @@ package org.skypro.skyshop.Art;
 
 import org.skypro.skyshop.search.Searchable;
 
-public record Article(String title, String text) implements Searchable {
-    public Article {
-        if (title == null || title.isEmpty()) {
+public final class Article implements Searchable {
+    private final String title;
+    private final String text;
+
+    public Article(String title, String text) {
+        if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Название статьи не может быть пустым");
         }
-        if (text == null || text.isEmpty()) {
+        if (text == null || text.trim().isEmpty()) {
             throw new IllegalArgumentException("Текст статьи не может быть пустым");
         }
+        this.title = title;
+        this.text = text;
     }
 
     @Override
     public String getSearchTerm() {
-        return getName() + " " + text();
+        return title + " " + text;
     }
-
 
     @Override
     public String getContentType() {
@@ -26,6 +30,10 @@ public record Article(String title, String text) implements Searchable {
     @Override
     public String getName() {
         return title;
+    }
+
+    public String getText() {
+        return text;
     }
 
     @Override
