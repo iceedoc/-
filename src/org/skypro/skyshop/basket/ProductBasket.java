@@ -1,36 +1,42 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
-import java.util.Arrays;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 public class ProductBasket {
-    private final Product[] products;
-    private int productCount;
-    private static final int MAX_SIZE = 5;
-
-    public ProductBasket() {
-        this.products = new Product[MAX_SIZE];
-        this.productCount = 0;
-    }
-
+    private final List<Product> products = new ArrayList<>();
     public boolean addProduct(Product product) {
         if (product == null) {
             throw new NullPointerException("Продукт не может быть null");
         }
+        return products.add(product);
+    }
 
-        if (productCount >= MAX_SIZE) {
-            return false;
+    public List<Product> removeProductsByName(String name) {
+        List<Product> removedProducts = new ArrayList<>();
+        Iterator<Product> iterator = products.iterator();
+
+        while (iterator.hasNext()) {
+            Product product = iterator.next();
+            if (product.getName().equals(name)) {
+                removedProducts.add(product);
+                iterator.remove();
+            }
         }
-
-        products[productCount++] = product;
-        return true;
+        return removedProducts;
     }
 
+    public List<Product> getProducts() {
+        return new ArrayList<>(products);
+    }
     public int size() {
-        return productCount;
+        return products.size();
     }
 
-    public Product[] getProducts() {
-        return Arrays.copyOf(products, productCount);
+    public void printBasket() {
+        System.out.println("Содержимое корзины:");
+        products.forEach(p -> System.out.println("- " + p.getName()));
     }
 }
