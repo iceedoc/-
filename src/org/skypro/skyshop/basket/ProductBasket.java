@@ -2,41 +2,41 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
 public class ProductBasket {
-    private final List<Product> products = new ArrayList<>();
-    public boolean addProduct(Product product) {
-        if (product == null) {
-            throw new NullPointerException("Продукт не может быть null");
-        }
-        return products.add(product);
+    private final Map<String, List<Product>> productsMap = new HashMap<>();
+
+    public void addProduct(Product product) {
+        Objects.requireNonNull(product, "Продукт не может быть null");
+        productsMap.computeIfAbsent(product.getName(), k -> new ArrayList<>())
+                .add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
-        List<Product> removedProducts = new ArrayList<>();
-        Iterator<Product> iterator = products.iterator();
-
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getName().equals(name)) {
-                removedProducts.add(product);
-                iterator.remove();
-            }
-        }
-        return removedProducts;
+        Objects.requireNonNull(name, "Имя не может быть null");
+        return productsMap.remove(name);
     }
 
-    public List<Product> getProducts() {
-        return new ArrayList<>(products);
-    }
-    public int size() {
-        return products.size();
+    public double getTotalPrice() {
+        return productsMap.values().stream()
+                .flatMap(List::stream)
+                .mapToDouble(Product::getPrice)
+                .sum();
     }
 
-    public void printBasket() {
-        System.out.println("Содержимое корзины:");
-        products.forEach(p -> System.out.println("- " + p.getName()));
+    public List<Product> getAllProducts() {
+        return productsMap.values().stream()
+                .flatMap(List::stream)
+                .toList();
+    }
+
+    public void printContents() {
+        productsMap.forEach((name, products) -> {
+            System.out.println(name + ":");
+            products.forEach(p ->
+                    System.out.println("  - " + p.getPrice() + " руб.")
+            );
+        });
     }
 }
