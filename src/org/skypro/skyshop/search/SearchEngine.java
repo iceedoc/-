@@ -4,33 +4,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchEngine {
-    private final Searchable[] searchables;
-    private int currentSize;
-
-    public SearchEngine(int initialCapacity) {
-        this.searchables = new Searchable[initialCapacity];
-        this.currentSize = 0;
-    }
-
+    private final List<Searchable> searchables = new ArrayList<>();
     public void add(Searchable searchable) {
-        if (currentSize < searchables.length) {
-            searchables[currentSize++] = searchable;
+        if (searchable != null) {
+            searchables.add(searchable);
         }
     }
 
-    public Searchable[] search(String query) {
+    public List<Searchable> search(String query) {
         List<Searchable> results = new ArrayList<>();
+        String lowerQuery = query.toLowerCase();
 
-        for (int i = 0; i < currentSize; i++) {
-            Searchable searchable = searchables[i];
-            if (searchable.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
+        for (Searchable searchable : searchables) {
+            if (searchable.getSearchTerm().toLowerCase().contains(lowerQuery)) {
                 results.add(searchable);
-                if (results.size() == 5) {
-                    break;
-                }
             }
         }
-
-        return results.toArray(new Searchable[0]);
+        return results;
+    }
+    public Searchable findBestMatch(String search) throws BestResultNotFound {
+        Searchable bestMatch = null;
+        int maxOccurrences = 0;
+        for (Searchable searchable : searchables) {
+            int occurrences = countOccurrences(searchable.getSearchTerm(), search);
+            if (occurrences > maxOccurrences) {
+                maxOccurrences = occurrences;
+                bestMatch = searchable;
+            }
+        }
+        if (bestMatch == null) {
+            throw new BestResultNotFound("Не найден подходящий результат для поиска: ");
+        }
+        return bestMatch;
+    }
+    private int countOccurrences(String text, String search) {
+        int occurrences = 0;
+        int index = 0;
+        while (true) {
+            index = text.toLowerCase().indexOf(search.toLowerCase(), index);
+            if (index == -1) break;
+            occurrences++;
+            index += search.length();
+        }
+        return occurrences;
     }
 }

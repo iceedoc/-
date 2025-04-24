@@ -1,15 +1,14 @@
 package org.skypro.skyshop.product;
 
 import org.skypro.skyshop.search.Searchable;
-
 import java.util.Objects;
 
 public abstract class Product implements Searchable {
     private final String name;
 
     public Product(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Имя продукта не может быть пустым");
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Название продукта не может быть пустым или состоять только из пробелов");
         }
         this.name = name;
     }
@@ -33,13 +32,15 @@ public abstract class Product implements Searchable {
 
     @Override
     public String toString() {
-        return String.format("%s: %d руб.", getName(), getPrice());
+        String specialIndicator = isSpecial() ? " [Специальное предложение]" : "";
+        return String.format("%s: %d руб.%s", getName(), getPrice(), specialIndicator);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Product product)) return false;
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
         return getName().equals(product.getName());
     }
 
