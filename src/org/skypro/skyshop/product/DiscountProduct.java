@@ -17,7 +17,7 @@ public class DiscountProduct extends Product {
     }
 
     @Override
-    public int getPrice() {
+    public double getPrice() {
         return (int) Math.round(basePrice * (100 - discountPercent) / 100.0);
     }
 
