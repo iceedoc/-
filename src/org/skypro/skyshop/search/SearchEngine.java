@@ -3,29 +3,27 @@ package org.skypro.skyshop.search;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SearchEngine {
-    private final List<Searchable> searchables = new ArrayList<>();
 
+public class SearchEngine {
+    private final Set<Searchable> searchables = new HashSet<>();
+
+    public static Comparator<Searchable> getSearchableComparator() {
+        return new SearchableComparator();
+    }
     public void add(Searchable searchable) {
         if (searchable != null) {
             searchables.add(searchable);
         }
     }
-
-    public Map<String, Searchable> search(String query) {
+    public Set<Searchable> search(String query) {
         String lowerQuery = query.toLowerCase();
 
         return searchables.stream()
                 .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerQuery))
-                .sorted(Comparator.comparing(Searchable::getName))
-                .collect(Collectors.toMap(
-                        Searchable::getName,
-                        s -> s,
-                        (existing, replacement) -> existing,
-                        LinkedHashMap::new
+                .collect(Collectors.toCollection(
+                        () -> new TreeSet<>(getSearchableComparator())
                 ));
     }
-
     public Searchable findBestMatch(String search) throws BestResultNotFound {
         Searchable bestMatch = null;
         int maxOccurrences = 0;
@@ -44,13 +42,14 @@ public class SearchEngine {
 
         return bestMatch;
     }
-
     private int countOccurrences(String text, String search) {
         int occurrences = 0;
         int index = 0;
+        String lowerText = text.toLowerCase();
+        String lowerSearch = search.toLowerCase();
 
         while (true) {
-            index = text.toLowerCase().indexOf(search.toLowerCase(), index);
+            index = lowerText.indexOf(lowerSearch, index);
             if (index == -1) break;
             occurrences++;
             index += search.length();
