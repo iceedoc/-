@@ -3,27 +3,29 @@ package org.skypro.skyshop.search;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class SearchEngine {
     private final Set<Searchable> searchables = new HashSet<>();
+    private static final Comparator<Searchable> SEARCHABLE_COMPARATOR =
+            Comparator.comparingInt((Searchable s) -> s.getName().length())
+                    .reversed()
+                    .thenComparing(Searchable::getName);
 
-    public static Comparator<Searchable> getSearchableComparator() {
-        return new SearchableComparator();
-    }
     public void add(Searchable searchable) {
         if (searchable != null) {
             searchables.add(searchable);
         }
     }
+
     public Set<Searchable> search(String query) {
         String lowerQuery = query.toLowerCase();
 
         return searchables.stream()
                 .filter(s -> s.getSearchTerm().toLowerCase().contains(lowerQuery))
                 .collect(Collectors.toCollection(
-                        () -> new TreeSet<>(getSearchableComparator())
+                        () -> new TreeSet<>(SEARCHABLE_COMPARATOR)
                 ));
     }
+
     public Searchable findBestMatch(String search) throws BestResultNotFound {
         Searchable bestMatch = null;
         int maxOccurrences = 0;
@@ -42,6 +44,7 @@ public class SearchEngine {
 
         return bestMatch;
     }
+
     private int countOccurrences(String text, String search) {
         int occurrences = 0;
         int index = 0;
